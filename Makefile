@@ -1,7 +1,7 @@
 build:
-	gcc -Wall -std=c99 ./src/*.c -lSDL2 -o game
+	gcc -Wall -std=c99 ./src/*.c -lSDL2 -lX11 -lXrandr -o game
 
-run:
+run: build
 	./game
 
 clean:

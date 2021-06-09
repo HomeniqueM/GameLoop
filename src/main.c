@@ -3,31 +3,39 @@
 #include "constants.h"
 
 /**
+ * Global variables
  * Will be responsible for starting the SDL
- * 
- *  If there is any error it will return FALSE,
- *  otherwise TRUE
+ *  If there is any error it will return false,
+ *  otherwise true
  */
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-int game_is_running = FALSE;
+int game_is_running = false;
 int last_frame_time = 0;
 
-struct ball
+/**
+ * Declare two game objects for the ball and the paddle
+ */
+struct game_object
 {
     float x;
     float y;
     float width;
     float height;
-} ball;
+    float vel_x;
+    float vel_y;
+} ball, paddle;
 
+/**
+ *  Function to initialize our SDL window
+ */
 int initialize_window(void)
 {
     // Initialize
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         fprintf(stderr, "Error initializing SDL.\n");
-        return FALSE;
+        return false;
     }
     // Create
     window = SDL_CreateWindow(
@@ -40,7 +48,7 @@ int initialize_window(void)
     if (!window)
     {
         fprintf(stderr, "Eror Creating SDL window.\n");
-        return FALSE;
+        return false;
     }
 
     // Renderer
@@ -49,12 +57,15 @@ int initialize_window(void)
     if (!renderer)
     {
         fprintf(stderr, "Eoor Creating SDL Renderer.\n");
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
+/**
+ * Function to poll SDL events and process keyboard input
+ */
 void process_input()
 {
     SDL_Event event;
@@ -64,48 +75,92 @@ void process_input()
     switch (event.type)
     {
     case SDL_QUIT:
-        game_is_running = FALSE;
+        game_is_running = false;
         break;
     case SDL_KEYDOWN:
         if (event.key.keysym.sym == SDLK_ESCAPE)
-            game_is_running = FALSE;
+        {
+            game_is_running = false;
+        }
+        // TODO: Set paddle velocity based on left/right arrow keys
+        // ...
         break;
-
-    default:
+    case SDL_KEYUP:
+        // TODO: Reset paddle velocity based on left/right arrow keys
+        // ...
         break;
     }
 }
 
+/**
+ * Setup function that runs once at the beginning of our program
+ */
 void setup()
 {
-    ball.x = 20;
-    ball.y = 20;
+    // Initialize the ball object moving down at a constant velocity
     ball.width = 15;
     ball.height = 15;
+    ball.x = 20;
+    ball.y = 20;
+    ball.vel_x = 300;
+    ball.vel_y = 300;
+
+    // Initialize the paddle position at the bottom of the screen
+    paddle.width = 100;
+    paddle.height = 20;
+    paddle.x = (WINDOW_WIDTH / 2) - (paddle.width / 2);
+    paddle.y = WINDOW_HEIGHT - 40;
+    paddle.vel_x = 0;
+    paddle.vel_y = 0;
 }
 
-void update()
+/**
+ * Update function with a fixed time step
+ */
+void update(void)
 {
-    // Waste Some Time /sleep until we reach the frame target time
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME))
-        ;
+    // Calculate how much we have to wait until we reach the target frame time
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
 
-    // Get a delta time factor coveted to seconds to be used to update my objects
-    float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
+    // Only delay if we are too fast too update this frame
+    if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME)
+        SDL_Delay(time_to_wait);
+
+    // Get delta_time factor converted to seconds to be used to update objects
+    float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
+
+    // Store the milliseconds of the current frame to be used in the next one
     last_frame_time = SDL_GetTicks();
 
-    ball.x += 70*delta_time;
-    ball.y += 50*delta_time;
+    // Update ball position based on its velocity
+    ball.x += ball.vel_x * delta_time;
+    ball.y += ball.vel_y * delta_time;
+
+    // TODO: Update paddle position based on its velocity
+    // ...
+
+    // TODO: Check for ball collision with the walls
+    // ...
+
+    // TODO: Check for ball collision with the paddle
+    // ...
+
+    // TODO: Prevent paddle from moving outside the boundaries of the window
+    // ...
+
+    // TODO: Check for game over when ball hits the bottom part of the screen
+    // ...
 }
 
-void render()
+/**
+ * Render function to draw game objects in the SDL window
+ */
+void render(void)
 {
     SDL_SetRenderDrawColor(renderer, 30, 35, 41, 255);
     SDL_RenderClear(renderer);
 
-    // Here Is where we can start drawing our game objects
-
-    // Draw
+    // Draw a rectangle for the ball object
     SDL_Rect ball_rect = {
         (int)ball.x,
         (int)ball.y,
@@ -114,9 +169,21 @@ void render()
     SDL_SetRenderDrawColor(renderer, 255, 255, 225, 255);
     SDL_RenderFillRect(renderer, &ball_rect);
 
-    SDL_RenderPresent(renderer); //Swap buffer
+    // Draw a rectangle for the paddle object
+    SDL_Rect paddle_rect = {
+        (int)paddle.x,
+        (int)paddle.y,
+        (int)paddle.width,
+        (int)paddle.height};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 225, 255);
+    SDL_RenderFillRect(renderer, &paddle_rect);
+
+    SDL_RenderPresent(renderer);
 }
 
+/**
+ * Function to destroy SDL window and renderer
+ */
 void destroy_window()
 {
     SDL_DestroyRenderer(renderer);
@@ -124,6 +191,9 @@ void destroy_window()
     SDL_Quit();
 }
 
+/**
+ * Main 
+ */
 int main()
 {
     game_is_running = initialize_window();
