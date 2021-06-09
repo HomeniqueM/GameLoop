@@ -11,6 +11,7 @@
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 int game_is_running = FALSE;
+int last_frame_time = 0;
 
 struct ball
 {
@@ -85,7 +86,13 @@ void setup()
 
 void update()
 {
-    //TODO:
+    // Waste Some Time /sleep until we reach the frame target time
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME));
+
+    last_frame_time = SDL_GetTicks();
+
+    ball.x += 2;
+    ball.y += 2;
 }
 void render()
 {
@@ -95,7 +102,11 @@ void render()
     // Here Is where we can start drawing our game objects
 
     // Draw
-    SDL_Rect ball_rect = {ball.x, ball.y, ball.width, ball.height};
+    SDL_Rect ball_rect = {
+        (int)ball.x,
+        (int)ball.y,
+        (int)ball.width,
+        (int)ball.height};
     SDL_SetRenderDrawColor(renderer, 255, 255, 225, 255);
     SDL_RenderFillRect(renderer, &ball_rect);
 
