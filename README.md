@@ -26,4 +26,12 @@ SDL
 
 
 ## Executed
+### Run from root folder
 
+Bluid 
+
+    make
+
+Run 
+
+    makr run

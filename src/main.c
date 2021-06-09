@@ -45,7 +45,8 @@ int initialize_window(void)
     return TRUE;
 }
 
-void setup() {
+void setup()
+{
     // TODO
 }
 
@@ -75,7 +76,12 @@ void update()
 }
 void render()
 {
-    //TODO:
+    SDL_SetRenderDrawColor(renderer, 30, 35, 41, 255);
+    SDL_RenderClear(renderer);
+
+    // Here Is where we can start drawing our game objects
+
+    SDL_RenderPresent(renderer);//Swap buffer
 }
 void destroy_window()
 {
