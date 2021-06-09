@@ -4,6 +4,7 @@
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
+int game_is_running = FALSE;
 /**
  * Will be responsible for starting the SDL
  * 
@@ -44,9 +45,59 @@ int initialize_window(void)
     return TRUE;
 }
 
-int main(int argc, char const *argv[])
+void setup() {
+    // TODO
+}
+
+void process_input()
 {
-    initialize_window();
+    SDL_Event event;
+    SDL_PollEvent(&event);
+
+    //Check type of the event
+    switch (event.type)
+    {
+    case SDL_QUIT:
+        game_is_running = FALSE;
+        break;
+    case SDL_KEYDOWN:
+        if (event.key.keysym.sym == SDLK_ESCAPE)
+            game_is_running = FALSE;
+        break;
+
+    default:
+        break;
+    }
+}
+void update()
+{
+    //TODO:
+}
+void render()
+{
+    //TODO:
+}
+void destroy_window()
+{
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+int main()
+{
+    game_is_running = initialize_window();
+
+    setup();
+
+    while (game_is_running)
+    {
+        process_input();
+        update();
+        render();
+    }
+
+    destroy_window();
 
     return 0;
 }
