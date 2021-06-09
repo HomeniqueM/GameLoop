@@ -2,15 +2,24 @@
 #include <SDL2/SDL.h>
 #include "constants.h"
 
-SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
-int game_is_running = FALSE;
 /**
  * Will be responsible for starting the SDL
  * 
  *  If there is any error it will return FALSE,
  *  otherwise TRUE
  */
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+int game_is_running = FALSE;
+
+struct ball
+{
+    float x;
+    float y;
+    float width;
+    float height;
+} ball;
+
 int initialize_window(void)
 {
     // Initialize
@@ -45,11 +54,6 @@ int initialize_window(void)
     return TRUE;
 }
 
-void setup()
-{
-    // TODO
-}
-
 void process_input()
 {
     SDL_Event event;
@@ -70,6 +74,15 @@ void process_input()
         break;
     }
 }
+
+void setup()
+{
+    ball.x = 20;
+    ball.y = 20;
+    ball.width = 15;
+    ball.height = 15;
+}
+
 void update()
 {
     //TODO:
@@ -81,8 +94,14 @@ void render()
 
     // Here Is where we can start drawing our game objects
 
-    SDL_RenderPresent(renderer);//Swap buffer
+    // Draw
+    SDL_Rect ball_rect = {ball.x, ball.y, ball.width, ball.height};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 225, 255);
+    SDL_RenderFillRect(renderer, &ball_rect);
+
+    SDL_RenderPresent(renderer); //Swap buffer
 }
+
 void destroy_window()
 {
     SDL_DestroyRenderer(renderer);
