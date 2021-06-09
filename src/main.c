@@ -87,13 +87,17 @@ void setup()
 void update()
 {
     // Waste Some Time /sleep until we reach the frame target time
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME));
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time + FRAME_TARGET_TIME))
+        ;
 
+    // Get a delta time factor coveted to seconds to be used to update my objects
+    float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();
 
-    ball.x += 2;
-    ball.y += 2;
+    ball.x += 70*delta_time;
+    ball.y += 50*delta_time;
 }
+
 void render()
 {
     SDL_SetRenderDrawColor(renderer, 30, 35, 41, 255);
