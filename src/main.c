@@ -47,7 +47,7 @@ int initialize_window(void)
 
     if (!window)
     {
-        fprintf(stderr, "Eror Creating SDL window.\n");
+        fprintf(stderr, "Error Creating SDL window.\n");
         return false;
     }
 
@@ -56,7 +56,7 @@ int initialize_window(void)
 
     if (!renderer)
     {
-        fprintf(stderr, "Eoor Creating SDL Renderer.\n");
+        fprintf(stderr, "Error Creating SDL Renderer.\n");
         return false;
     }
 
